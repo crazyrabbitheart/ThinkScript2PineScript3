@@ -1,0 +1,34 @@
+# HPMR 60-Period look-back
+
+input aggregationPeriod = AggregationPeriod.HOUR;
+def hourhigh = high(period = aggregationPeriod);
+def hourlow = low(period = aggregationPeriod);
+def houropen = open(period = aggregationPeriod);
+def range = (hourhigh - hourlow);
+
+# Get range for each hour over the last 60 days
+
+input bars_back = 60;
+input step = 23;
+def x = fold i = 1 to bars_back+1
+with p
+do p + getvalue(range, ( i * step) );
+
+def s = x / bars_back;
+def t = s / 2;
+
+def hpmr_avg = t;
+def hpmr_range = s;
+
+def uppertopline = (hourlow + hpmr_range);
+def upperlowerline = uppertopline + 2;
+def lowerlowerline = (hourhigh - hpmr_range);
+def lowertopline = lowerlowerline - 2;
+
+plot upperhigh = uppertopline;
+plot upperlow = upperlowerline;
+plot lowerhigh = lowertopline;
+plot lowerlow = lowerlowerline;
+
+addCloud(upperhigh, upperlow, color.CYAN, color.CYAN);
+addCloud(lowerhigh, lowerlow, color.ORANGE, color.ORANGE);
